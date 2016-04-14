@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <!--<link rel="stylesheet" type="text/css" href="css/index.css" />-->
+        <title>Loocation Home Screen</title>
+        <link rel="stylesheet" type="text/css" href="css/normalize.css"/>
+        <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+        <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
+         <!-- GeoFire -->
+<script src="https://cdn.firebase.com/libs/geofire/4.0.0/geofire.min.js"></script>
+        
+        <style> 
+/*
+            #popUpInfo {
+                display: block;
+            }
+            
+            
+*/
+            .cancConf button {
+                display: none;
+            }
+        </style>
+        
+        
+        
+    </head>
+    
+    
+    <body>
+        <header class="topBar">
+            <div class="menuButton" id="searchButton"><img src="img/search.svg" class="icon"></div><!--
+            --><div class="menuButton middle" id="filterButton"  ><img src="img/hamburger.svg" class="icon"></div><!--
+            --><div class="menuButton" id="uploadButton"><img src="img/addLocation.svg" class="icon"></div>
+            
+<!--            <a class="newPageLink" href="upload.html" ><div class="menuButton" id="uploadButton"><img src="img/addLocation.svg" class="icon"></div></a>-->
+        </header>
+        
+         <div class="cancConf">
+            <button id="cancLocationEdit">Cancel</button>
+            <button id="confLocationEdit">Confirm</button>
+        </div>
+        
+        <div id="map"></div> <!--This will eventually contain the map at some point when I can be bothered -->
+        
+<!--        !!??? same id as popUpWindow in the upload page is this a problem?-->
+        <dialog class="popUpWindow" id="popUpFilter">
+            <img src="img/cancelButton.svg" class="popUpCancel" id="filterCancel">
+            <h2 class="filterHeading">Filters</h2>
+            
+            <div class="filterCategory"><p class="filterTitle">Gender:</p></div>
+            <div class="filterChecks">
+                <label><input type="checkbox" id="maleFilter"/> Male</label>
+                <br>
+                <label><input type="checkbox" id="femaleFilter"/> Female</label>
+                <br>
+                <label><input type="checkbox" id="uniFilter"/> Unisex</label>
+            </div>
+            
+    
+            
+            <div class="filterCategory"><p class="filterTitle">Parent Facilities:</p></div>
+            <div class="filterChecks">
+                <label><input type="checkbox" id="maleBabyFilter"/> In Male</label>
+                <br>
+                <label><input type="checkbox" id="femBabyFilter"/> In Female</label>
+                <br>
+                <label><input type="checkbox" id="uniBabyFilter"/> In Unisex</label>
+            </div>
+            
+            
+            <div class="filterCategory"><p class="filterTitle">Wheelchair Access:</p></div>
+            <div class="filterChecks">
+                <label><input type="checkbox" id="wheelchairFilter"/> Yes</label>
+            </div>
+        </dialog>
+        
+        
+        
+        <dialog class="popUpWindow" id="popUpInfo">
+            <img src="img/cancelButton.svg" class="popUpCancel" id="infoCancel">
+            <img src="img/editPencil.svg" class="popUpEdit" id="filterEdit">
+            <div class="detailsAddress"><h1 id="address"></h1></div>
+            <!-- ???delete the fake address here because the user will determine their own through the previous process-->
+            
+            <p class="detailsTitle">Gender:</p>
+            
+            <div class="detailsChecks">
+                <label><input type="checkbox" id="maleInfo"/> Male</label>
+                <label><input type="checkbox" id="femaleInfo"/> Female</label>
+                <label><input type="checkbox" id="uniInfo"/> Unisex</label>
+            </div>
+            
+            <p class="detailsTitle">Parent Facilities:</p>
+            
+            <div class="detailsChecks">
+                <label><input type="checkbox" id="maleBabyInfo"/> Male</label>
+                <label><input type="checkbox" id="femBabyInfo"/> Female</label>
+                <label><input type="checkbox" id="uniBabyInfo"/> Unisex</label>
+            </div>
+            
+            <p class="detailsTitle">Wheelchair Access:</p>
+            
+            <div class="detailsChecks">
+                <label><input type="checkbox" id="wheelchairInfo"/> Yes</label>
+                
+            </div>
+            
+            <button class="popUpDone" id="doneEdit">Done</button>
+        
+                       
+        </dialog>
+        
+        
+        <img id="creditsButton" src="img/heart.svg">
+        
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+        
+        <script type="text/javascript" src="js/home.js"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6Fb4j6Q1MnyBJg5XCQasf9ykfPwU8eB4&callback=initMap"
+            async defer>
+        </script>
+    </body>
+</html>

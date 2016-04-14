@@ -1,0 +1,279 @@
+@import url(https://fonts.googleapis.com/css?family=Poppins:300);
+
+
+/*used in both*/
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 100;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-weight: 100;
+}
+
+
+
+/*for the div that contains the map - both screens*/
+#map {
+    height: 90%;
+    width: 100%;
+}
+
+
+
+
+
+/*css for headers*/
+.topBar {
+    background-color: #00CCCC;
+    height: 10%;
+    color: black;
+}
+
+/*for index header buttons*/
+.menuButton{
+    display: inline-block;
+    width: 33%;
+    height: 100%;
+}
+
+.middle {
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+    width: 33%;    
+}
+
+/*for upload, div containing icon*/
+.screenIcon{
+    display: inline-block;
+    height: 100%;
+    min-width: 50px;
+}
+
+/*actual icon images for both*/
+.icon {
+    position: relative;
+    height: 60%;
+    margin: 0 auto;
+    top: 20%;
+    display: block;
+}
+
+/*for upload heading*/
+.topBar h1 {
+    display: inline;
+    position: relative;
+    bottom: 21.5%;
+    font-size: 1.3em;
+/*    font-size: 4vw;*/
+}
+
+
+
+
+
+/*for the dialog windows*/
+.popUpWindow {
+    background-color: #00CCCC;
+    background-color: rgba(0, 204, 204, 0.9);
+    display: none;
+    border: 0;
+    color: white;
+    padding-top: 0;
+    width: 220px;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    margin-left: -130px;
+    padding: 10px 20px;
+    height: 330px;
+    overflow: hidden;
+}
+
+/*buttons to close filters windows*/
+.popUpCancel {
+    height: 25px;
+    float: right;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.popUpEdit {
+    height: 20px;
+    position: absolute;
+    right: 22px;
+    top: 58px;
+   
+
+}
+
+
+/*-----------------------------------------------------------------*/
+/*for the upload and info windows*/
+#address {
+    font-size: 1.2em;
+/*    default line height:*/
+/*    line-height: 1.65;*/
+    line-height: 1.4;
+}
+
+.detailsAddress {
+    height: 100px;
+    border-bottom: 1px solid white;
+    overflow: scroll;
+}
+
+.detailsTitle {
+    margin-bottom: 0;
+}
+            
+.detailsChecks {
+    margin-bottom: 2px;
+}
+
+/*-----------------------------------------------------------------*/
+.popUpDone {
+    background-color: transparent;
+    border: none;           
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+/*
+    padding: 2px 6px 3px;
+    box-shadow: 0px 0px 10px black;
+*/
+    bottom: 9px;
+    right: 20px;
+/*
+    adds a border box on the done button:
+                
+    padding: 0 10px;
+    bottom: 8px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+*/
+}
+
+#doneEdit {
+    display: none;
+}
+
+
+/*-----------------------------------------------------------------*/
+/*only for the choose your own filters box*/
+.filterHeading {
+    margin-top: 0px;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.filterCategory {
+    height: 80px;
+    margin: 0 0 15px 0;
+    display: inline-block;
+    width: 113px;
+    padding: 0;
+    border-top: 1px solid white;
+}
+
+.filterTitle {
+    margin: 0;
+}
+
+.filterChecks {
+    float: right;
+    width: 98px;
+    margin: 0px 0 15px 0px;
+    display: inline-block;
+    height: 80px;
+}
+
+
+
+
+
+
+/*-----------------------------------------------------------------*/
+/*upload controlling stuff*/
+ #uploadHeading {
+     /*font-size: 1.5em;*/
+     font-size: 4vw;
+}
+
+.cancConf button {
+    background-color: white;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: black;
+/*
+    background-color: rgba(0, 0, 0, 0.6);
+    color: white;
+*/
+/*
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #009999;
+*/
+
+    border: none;
+    margin: 0;
+    padding: 4px 11px;
+    width: 84px;
+    text-align: left;
+}
+
+#confirmButton, #confLocationEdit {
+    margin-top: 10%;
+    display: none;
+}
+
+.cancConf {
+    position: fixed;
+    top: 11%;
+    left: 1%;
+    z-index: 1;
+    height: 35px;
+    width: 10%
+}
+/*
+            #uploadCancel:active {
+                color: green;
+                box-shadow: none;
+                border: none;
+                background-color: red;
+                
+            }
+*/
+
+
+#creditsButton {
+    position: fixed;
+    bottom: 1.25em;
+    right: 1.25em;
+    height: 25px;
+    opacity: 0.5;
+} 
+
+/*
+input[type=checkbox] {
+    visibility: hidden;
+    http://cssdeck.com/labs/css-checkbox-styles
+}
+*/
+
+/*
+
+input[type=checkbox][disabled] {
+    color: white;
+    background-color: white;
+    outline: 0.5px solid white;
+}
+*/
+
