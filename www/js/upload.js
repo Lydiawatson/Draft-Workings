@@ -82,8 +82,6 @@ function initMap() {
 var UplWindow = document.getElementById('popUpUpload');
 
 function findAddress() {
-//    alert("potato");
-//    alert(markerPos.lat + "   " +  markerPos.lng);
     geocoder = new google.maps.Geocoder();
     geocoder.geocode({'location': markerPos}, function (results, status) {
         

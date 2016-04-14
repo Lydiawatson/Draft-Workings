@@ -11,13 +11,21 @@ var geoQuery = geoFireRef.query({
 //var genderPrefs = [];
 var currentKey;
 var infoValues;
-
-
+var originalPos;
+var doneButton = document.getElementById('doneEdit');
 var editing;
+var changeAddressEntered = false;
 
 var changingMarker;
-
-
+var newMarkerPos;
+var editButton = document.getElementById('filterEdit');
+var cancFilter = document.getElementById('filterCancel');
+var newLat;
+var newLng;
+var filtWindow = document.getElementById("popUpFilter");
+var genderPrefs = [];
+var babyPrefs = [];
+var accessPrefs = null;
 
 function getData(genderPrefs, babyPrefs, accessPrefs) {
     for (var i = 0; i < markers.length; i++) {
@@ -131,8 +139,10 @@ function getData(genderPrefs, babyPrefs, accessPrefs) {
 
 
 
-var editButton = document.getElementById('filterEdit');
-editButton.onclick =  function (){
+
+editButton.onclick =  determineEditFunction;
+    
+function determineEditFunction(){
     
 //    alert(editing);
     if (editing != true) {
@@ -149,12 +159,7 @@ editButton.onclick =  function (){
 //    alert("at end: " +editing)
                             };
 
-var doneButton = document.getElementById('doneEdit')
 
-//function editThings() {
-//    enterEditMode();
-//    document.getElementById("address").onclick = changeAddress;
-//}
 
 
 
@@ -277,7 +282,7 @@ function doneEdit() {
 
 
 
-var newMarkerPos;
+
 
 
 
@@ -310,10 +315,9 @@ var newMarkerPos;
     });
 }*/
 
-var originalPos;
-//var addressChanged = false;
-//var changingMarker;
-var changeAddressEntered = false;
+
+
+
 
 function changeAddress() {
 //    var continueFunction = confirm("Do you wish to change the location of this loo?");
@@ -382,8 +386,7 @@ function exitLocationEdit() {
 //    /*problem*/changingMarker.setMap(null);
     
 }
-var newLat;
-var newLng;
+
 
 function confirmLocationEdit() {
     //???I want these to execute asynchronously/in order: how??
@@ -445,17 +448,7 @@ function schangeAddress() {
 }
      
 
-   
-
-//    marker.addListener('dragend',function(event) {
-//        alert("seven potatoes");
-//                markerPos = marker.position;
-//        findAddress();
-////            console.log(markerPos);
-//    });
-    
-//                
-                
+             
             
  
  
@@ -557,7 +550,7 @@ function schangeAddress() {
 
 
 
-var cancFilter = document.getElementById('filterCancel');
+
 cancFilter.onclick = closeFilters;
 
 
@@ -569,15 +562,13 @@ function closeInfo() {
         exitEditMode();
     }
 }
-var cancInfo = document.getElementById('infoCancel');
-cancInfo.onclick = closeInfo;
+document.getElementById('infoCancel').onclick = closeInfo;
 
 
 function uploadPage() {
     window.open("upload.html", "_self");
 }
-var uploadLink = document.getElementById('uploadButton');
-uploadLink.onclick = uploadPage;
+document.getElementById('uploadButton').onclick = uploadPage;
 
 //function that will eventually dictate what happens when the credits button is clicked
 function openCredits() {
@@ -642,7 +633,7 @@ function initMap() {
 
 
 
-var filtWindow = document.getElementById("popUpFilter");
+
 
 /*function getFilters() {
     filtWindow.style.display = 'block';
@@ -657,9 +648,7 @@ document.getElementById("filterButton").onclick = function() {
 }
 
 
-var genderPrefs = [];
-var babyPrefs = [];
-var accessPrefs = null;
+
 function closeFilters() {
     /*for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
