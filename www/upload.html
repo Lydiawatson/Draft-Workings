@@ -91,13 +91,18 @@
         
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript">
-            app.initialize();
-        </script>
+        
         
         <script type="text/javascript" src="js/upload.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6Fb4j6Q1MnyBJg5XCQasf9ykfPwU8eB4&callback=initMap"
             async defer>
+        </script>
+        <script type="text/javascript">
+            //runs the runApp function when cordova's deviceready event occurs
+//            document.addEventListener('deviceready', runApp, false);
+            
+            //while testing the website on my browser (without cordova) the above doesn't work, so I will just run the function immediately.
+            runApp();
         </script>
     </body>
 </html>
