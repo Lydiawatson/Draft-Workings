@@ -1,41 +1,61 @@
-var map;
-var firebaseRef = new Firebase("https://loocation.firebaseio.com/");
-var geoFireRef = new GeoFire(firebaseRef.child("locations"));
-var marker;
-var markers = [];
+/**/var map;
+/**/var firebaseRef = new Firebase("https://loocation.firebaseio.com/");
+/**/var geoFireRef = new GeoFire(firebaseRef.child("locations"));
+
+//var marker;
+
+/**/var looArray = [];
 var checkValues;
-var geoQuery = geoFireRef.query({
+/**/var geoQuery = geoFireRef.query({
         center: [-36.8436, 174.7669],
         radius: 10.5
     });
 var currentKey;
 var infoValues;
 var originalPos;
-var doneButton = document.getElementById('doneEdit');
-var editing;
+
+
 var changeAddressEntered = false;
 
 var changingMarker;
 var newMarkerPos;
-var editButton = document.getElementById('filterEdit');
-var cancFilter = document.getElementById('filterCancel');
+
+
 var newLat;
 var newLng;
-var filtWindow = document.getElementById("popUpFilter");
+
 var genderPrefs = [];
 var babyPrefs = [];
 var accessPrefs = null;
-editButton.onclick =  determineEditFunction;
-doneButton.onclick = doneEdit;
-cancFilter.onclick = closeFilters;
-document.getElementById('infoCancel').onclick = closeInfo;
+
+
+var filtWindow = document.getElementById("popUpFilter");
+
+
+
+
+document.getElementById('filterCancel').onclick = closeFilters;
+
 document.getElementById('uploadButton').onclick = uploadPage;
-var credButton = document.getElementById('creditsButton');
+document.getElementById('creditsButton').onclick = openCredits;
 document.getElementById("filterButton").onclick = getFilters;
-credButton.onclick = openCredits;
+
+
+
+var editButton = document.getElementById('filterEdit');
+var doneButton = document.getElementById('doneEdit');
+var editing;
+editButton.onclick =  determineEditFunction;
+doneButton.onclick = saveEdit;
+document.getElementById('infoCancel').onclick = closeInfo;
 
 
 //functions for the basic loading and filtering of the page
+
+//function to load the map
+/*run by callback in HTML*/
+/*uses map*/
+/*calls loadData*/
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -36.86803405818809, lng: 174.75977897644043},
@@ -46,7 +66,6 @@ function initMap() {
         zoomControl: false,
         disableDoubleClickZoom: true
     });
-    
     
     //if geolocation is working center the map on the user's position
     if (navigator.geolocation) {
@@ -59,288 +78,365 @@ function initMap() {
         });
     }
     
-    getData([], [], null)
+    //retrieves locations from the database with the loadData function
+    loadData();
 }
-function getData(genderPrefs, babyPrefs, accessPrefs) {
-    for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+
+
+//function to retrieve the locations in the database
+/*run by initMap*/
+/*uses looAray, map, geoQuery*/
+/*calls getInfo and filterLoo*/
+function loadData() {
+    //remove all markers if there are any
+    for (var i = 0; i < looArray.length; i++) {
+        looArray[i].marker.setMap(null);
     }
-    markers = [];
-    var onKeyEnteredRegistration = geoQuery.on("key_entered", function (key, location, distance) {
-//        console.log( key +  " is at " + location);
-        
-        var genderHappy = null;
-        var babyHappy = null;
-        var accessHappy = null;
-        var values;
-        var filters = firebaseRef.child("filters/" + key + "/looFilters");
-        
-        filters.on("value", function(snapshot) {
-            values = snapshot.val();
-//            console.log(values);
-        
-        
-            if (genderPrefs.length != 0) {
-                for (var i=0; i<genderPrefs.length; i++) {
-                    if (values[genderPrefs[i]] == true) {
-                    genderHappy = true;
-                    }
-                }
-//                console.log("meetsGender is " + genderHappy);
-            } else {
-                genderHappy = true;
-//                console.log("meetsGender is " + genderHappy);
-
-            }
-        
-
-            if (babyPrefs.length != 0) {
-
-                for (var i=0; i<babyPrefs.length; i++) {
-                    if (values[babyPrefs[i]] == true) {
-                        babyHappy = true;
-                    }
-                }
-//                console.log("meetsbaby is " + babyHappy);
-            } else {
-                babyHappy = true;
-//                console.log("meetsbaby is " + babyHappy);
-            }
-            
-        
-            if (accessPrefs) {
-                if (values['wheelchair']) {
-                    accessHappy = true;
-                }
-            } else {
-                accessHappy = true;
-            }
-            
-        
-            if (genderHappy == true && babyHappy == true && accessHappy == true) {
-                var markerPos = {lat: location[0], lng: location[1]};
-                marker = new google.maps.Marker({
-                    position: markerPos,
-                    map: map
-                });
-            
-                marker.addListener('click',function() {
-                    /* var checkValues = ['maleInfo', 'femaleInfo', 'uniInfo', 'maleBabyInfo', 'femBabyInfo', 'uniBabyInfo', 'wheelchairInfo'];                    */
-                    checkValues = ['maleInfo', 'femaleInfo', 'uniInfo', 'maleBabyInfo', 'femBabyInfo', 'uniBabyInfo', 'wheelchairInfo'];
-                    currentKey = key;
-                    getAddress(markerPos);
-                    console.log(values);
- 
-                    infoValues = [values.male, values.fem, values.uni, values.mBab, values.fBab, values.uBab, values.wheelchair];
+    looArray = [];
     
-
-                    for (var i = 0; i<checkValues.length; i++) {
-                        document.getElementById(checkValues[i]).checked = infoValues[i];
-                        document.getElementById(checkValues[i]).disabled = true;
-                    }
-              
-//                    doneButton.style.display = "none";
-//                    editing = false;
-//                    editButton.src = "img/editPencil.svg";
-    
-    
-                    document.getElementById('popUpInfo').style.display = 'block';
-                    map.setOptions({draggable: false});
-                    
-                    
-                    
-                           
-                });
-            
-            
-                markers.push(marker);
-            } 
-        
-//        document.getElementById("filterCancel").addEventListener("click", function() {
-//            alert('hi');
-//            if (genderHappy != true) {
-//                marker.setMap(null);
-//            }
-//                closeFilters();
-//        });
-           
+    //create a marker for every location in the database within the geoQuery
+    geoQuery.on("key_entered", function (key, location, distance) {
+        var markerPos = {lat: location[0], lng: location[1]};
+        var marker = new google.maps.Marker({
+            position: markerPos,
+            //make sure the marker doesn't display on the map until required
+            map: null
         });
+        var markerObject = {
+            key: key,
+            marker: marker,
+        }
+        
+        
+        //add the marker and its key to an array
+        looArray.push(markerObject);
+        
+        //run the filterLoo function, to determine whether each marker meets the user's filter preferences, and if so displays that marker
+        filterLoo(key, marker);
+        
     });
 }
+
+
+
+//function to assess whether a loo meets filter preferences
+/*run by loadData and filterAll*/
+/*uses firebaseRef, genderPrefs, babyPrefs, accessPrefs*/
+/*calls nothing*/
+function filterLoo(key, marker) {
+    //variables for whether the particular loo being evaluated meets the filters
+    var genderHappy = null;
+    var babyHappy = null;
+    var accessHappy = null;
+    
+    var filters = firebaseRef.child("filters/" + key + "/looFilters");
+    //retrieve the loo's filter information from the database and evaluate it
+    filters.on("value", function(snapshot) {
+        var values = snapshot.val();
+        
+        //assess whether it meets the gender preferences
+        if (genderPrefs.length != 0) {
+            for (var i = 0; i < genderPrefs.length; i++) {
+                if (values[genderPrefs[i]]) {
+                    genderHappy = true;
+                }
+            }
+        } else {
+            genderHappy = true;
+        }
+        
+        //assess whether it meets the baby preferences
+        if (babyPrefs.length != 0) {
+            for (var i = 0; i < babyPrefs.length; i++) {
+                if (values[babyPrefs[i]]) {
+                    babyHappy = true;
+                }
+            }
+        } else {
+            babyHappy = true;
+        }
+
+        //assess whether it meets the access preferences
+        if (accessPrefs) {
+            if (values['wheelchair']) {
+                accessHappy = true;
+            }
+        } else {
+            accessHappy = true;
+        }
+
+        //if the loo meets all preferences put it on the map
+        if (genderHappy && babyHappy && accessHappy) {
+            if (marker.map == null) {
+                marker.setMap(map);
+            }
+            marker.addListener("click", function() {getInfo(values, marker, key);})
+        } else {
+            //remove the loo from the map
+            marker.setMap(null);
+        }
+        
+        //when the marker is clicked, run the getInfo function
+        
+    });
+}
+
+
+//runs a loop that executes the filterLoo function for every loo in the array
+/*run by closeFilters*/
+/*uses nothing*/
+/*calls filterLoo*/
+function filterAll() {
+    for (var i = 0; i < looArray.length; i++) {
+        filterLoo(looArray[i].key, looArray[i].marker);
+    }
+}
+    
+
+
+//opens the filter dialog box and stops the moving of the map    
+/*run when button is clicked*/
+/*uses filtWindow and map*/
+/*calls nothing*/
 function getFilters() {
     filtWindow.style.display = 'block';
     map.setOptions({draggable: false});
 }
-function closeFilters() {
-    /*for (var i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
-    }*/
-   /* var */genderPrefs = [];
-    /*var*/ babyPrefs = [];
 
-    
+//update/set the user's filter preferences and close the filter window
+/*run when cancel button is clicked*/
+/*uses map, filtWindow*/
+/*calls filterAll*/
+function closeFilters() {
+    genderPrefs = [];
+    babyPrefs = [];
+    accessPrefs = null;
+
+    //ids for each checkbox in the html
     var checkIds = ['maleFilter', 'femaleFilter', 'uniFilter', 'maleBabyFilter', 'femBabyFilter', 'uniBabyFilter'];
+    //corresponding ids of each filter as they are entered into the firebase database
     var fireIds = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab'];
     
+    //add every gender preference to the genderPrefs array
     for (var i=0; i<3; i++) {
         if(document.getElementById(checkIds[i]).checked) {
             genderPrefs.push(fireIds[i]);
         }
     }
+    //add every baby preference to the babyPrefs array
     for (var i=3; i<6; i++) {
         if(document.getElementById(checkIds[i]).checked) {
             babyPrefs.push(fireIds[i]);
         }
     }
     
-
-    /*var*/ accessPrefs = null;
-    
+    //determine whether wheelchair access has been requested
     if (document.getElementById("wheelchairFilter").checked) {
         accessPrefs = true;
     }
     
     
+    //filter the loos according to preferences
+    filterAll();
     
-    getData(genderPrefs, babyPrefs, accessPrefs);
+    //close the filters window
     filtWindow.style.display = 'none';
     map.setOptions({draggable: true});
 }
+
+//opens the upload page
+/*runs when button is clicked*/
+/*uses nothing*/
+/*calls nothing*/
+function uploadPage() {
+    window.open("upload.html", "_self");
+}
+
+//function that will eventually dictate what happens when the credits button is clicked
+function openCredits() {
+    alert('heart has been clicked');
+}
+
+
+
+
+
+
+//opens an infoWindow displaying relevant information about the selected loo
+/*run when marker is clicked due to event listener in filterloo*/
+/*uses checkValues, infoValues, map */
+/*calls getAddress*/
+function getInfo(values, currentMarker, currentKey){
+    //ids for each checkbox in the HTML
+    checkValues = ['maleInfo', 'femaleInfo', 'uniInfo', 'maleBabyInfo', 'femBabyInfo', 'uniBabyInfo', 'wheelchairInfo'];
+    //corresponding values of each filter as they are entered into the firebase database
+    infoValues = [values.male, values.fem, values.uni, values.mBab, values.fBab, values.uBab, values.wheelchair];
+    
+    //finds the address of the chosen loo
+    getAddress(currentMarker.position);
+
+    //ticks checkboxes depending on the loo's amenities to display information to the user
+    for (var i = 0; i < checkValues.length; i++) {
+        document.getElementById(checkValues[i]).checked = infoValues[i];
+        document.getElementById(checkValues[i]).disabled = true;
+    }
+    
+    //opens the infoWindow
+    document.getElementById('popUpInfo').style.display = 'block';
+    map.setOptions({draggable: false});
+
+    
+}
+
+
+//changes the heading of the info box to the loo's formatted address
+/*run by getInfo*/
+/*uses nothing */
+/*calls nothing*/
 function getAddress(markerPos) {
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({'location': markerPos}, function (results, status) {
         
-//        gives full address:
-        
+        //gives full address:
         if (status === google.maps.GeocoderStatus.OK) {
             document.getElementById("address").innerHTML = results[0].formatted_address;
-        } //consider having error messages here but otherwise nah
+        }
     });
 }
+
+
+//closes the infoWindow
+/*run when cancel button is clicked*/
+/*uses map */
+/*calls nothing*/
 function closeInfo() {
     document.getElementById('popUpInfo').style.display = 'none';
     map.setOptions({draggable: true});
-    if (editing) {
-        cancelEdit();
-        exitEditMode();
-    }
+    
+//    if (editing) {
+//        cancelEdit();
+//        exitEditMode();
+//    }
 }
 
-//functions for editing
+
+
+
+//runs functions for editing depending on whether user is already in edit mode
+/*runs when edit button is clicked*/
+/*uses editing*/
+/*calls enterEditMode, cancelEdit, exitEditMode*/
 function determineEditFunction(){
-    
-//    alert(editing);
+    //if the user is not already editing, enter edit mode
     if (editing != true) {
-//        var checkEdit = confirm("Do you want to edit this loo's information?");
-//        if (checkEdit){
             enterEditMode();
-//        }
     }
     else {
-//        cancelEdit();
+        //otherwise set everything back to its initial value and exit edit mode
         cancelEdit();
         exitEditMode();
     }
-//    alert("at end: " +editing)
-                            };
+};
+
+
+//puts the app into edit mode
+/*run by determineEditFunction*/
+/*uses editing, doneButton, editButton, checkValues*/
+/*calls nothing*/
 function enterEditMode() {
     editing = true
-    addressChanged = false;
-    changeAddressEntered = false;
     
     doneButton.style.display = "block";
     editButton.src = 'img/cancelEditPencil.svg';
 
-    //makes check boxes editable
+    //make checkboxes editable
     for (var i = 0; i<checkValues.length; i++) {
         document.getElementById(checkValues[i]).disabled = false;
     }
-    
-    document.getElementById("address").addEventListener("click", changeAddress);
-
-    
 }
-function cancelEdit() {
-    
-    for (var i = 0; i<checkValues.length; i++) {
-        document.getElementById(checkValues[i]).checked = infoValues[i];
-    }  
-    
-    //need to reset the address change
-}
-function doneEdit() {
-    debugger;
-   //asess the filters and change them
-    var looFilters = {};
-    var properties = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab', 'wheelchair'];
-    
-    for (var i = 0; i < properties.length; i++) {
-        looFilters[properties[i]] = document.getElementById(checkValues[i]).checked;
-    }
-    console.log(looFilters);
-    
-    firebaseRef.child("filters/" + currentKey + "/looFilters").set(looFilters, function(error) {
-        
-        if(error) {
-            alert("Something has gone horribly wrong." + error);
-        } else {
-            if (changeAddressEntered) {
-//                alert("hi");
-//                alert("lat is :" + changingMarker.position.lat() + " lng is: " + changingMarker.position.lng());
-                
-               
-//    /*problem*/changingMarker.setMap(null);
-    firebaseRef.child("locations/" + currentKey + "/l").set({
-                    0: changingMarker.position.lat(),
-                    1: changingMarker.position.lng()
-                }, function (error) {
-                    if(error) {
-                        alert("Something has gone horribly wrong. " + error);
-                    } else {
-                        exitEditMode();
-                        alert("This Loocation has been successfully updated. Thank you for your contribution");   
-                        
-//                        changingMarker = null;
-//                        changingMarker.setMap(null);
-                    }
-                });
-            } else {
-                alert("This Loocation has been successfully updated. Thank you for your contribution");   
-                exitEditMode();
-            }
 
-            
-        }
-            
-            });
-            
-        
-    
-//    exitEditMode();
-        
-    }
+
+//takes the app out of edit mode
+/*run by determineEditFunction*/
+/*uses editing, doneButton, editButton, checkValues*/
+/*calls nothing*/
 function exitEditMode() {
     editing = false
     
     doneButton.style.display = "none";
     editButton.src = "img/editPencil.svg";
     
+    //disable checkboxes again
     for (var i = 0; i<checkValues.length; i++) {
         document.getElementById(checkValues[i]).disabled = true;
     }
-//    getData(genderPrefs, babyPrefs, accessPrefs);
+}
+
+//cancels the edit and resets all information 
+/*run by determineEditFunction*/
+/*uses checkValues, infoValues*/
+/*calls nothing*/
+function cancelEdit() {
+    for (var i = 0; i<checkValues.length; i++) {
+        document.getElementById(checkValues[i]).checked = infoValues[i];
+    }  
+}
+
+//!!!! current key
+
+//saves the edited information
+/*run when button clicked*/
+/*uses currentkey, firebaseRef, loofilters,  */
+/*calls filterAll,*/
+function saveEdit() {
+   //asess the filtering information and save them in the looFilters object
+    var looFilters = {};
+    var properties = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab', 'wheelchair'];
     
-    
-    
-    if (changeAddressEntered) {
-        debugger;
-//        /*problem*/changingMarker.setMap(null);
-        changingMarker = null;
-//        getData(genderPrefs, babyPrefs, accessPrefs);
+    for (var i = 0; i < properties.length; i++) {
+        looFilters[properties[i]] = document.getElementById(checkValues[i]).checked;
     }
     
-    document.getElementById("address").removeEventListener("click", changeAddress);
-}
+    //replace the old looFilters information in the database with the updated data
+    firebaseRef.child("filters/" + currentKey + "/looFilters").set(looFilters, function(error) {
+        if(error) {
+            alert("Something has gone horribly wrong." + error);
+        } else {
+                alert("This Loocation has been successfully updated. Thank you for your contribution");   
+                exitEditMode();
+            }  
+        });
+        
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function exitLocationEdit() {
     document.getElementById('popUpInfo').style.display = 'block';
     document.getElementById("cancLocationEdit").style.display = "none";
@@ -374,8 +470,8 @@ function changeAddress() {
         if (!changeAddressEntered) {
 //            alert("lol");
             changeAddressEntered = true;
-            for (var i = 0; i < markers.length; i++) {
-                markers[i].setMap(null);
+            for (var i = 0; i < looArray.length; i++) {
+                looArray[i].setMap(null);
             }
             var locationRef = firebaseRef.child("locations/" + currentKey + "/l");
             locationRef.on("value", function(snapshot) {
@@ -403,15 +499,3 @@ function changeAddress() {
         
     }
 }
-
-
-function uploadPage() {
-    window.open("upload.html", "_self");
-}
-//function that will eventually dictate what happens when the credits button is clicked
-function openCredits() {
-    //random stuff so that I can test the function works
-    alert('heart has been clicked');
-}
-
-
