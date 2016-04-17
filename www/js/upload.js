@@ -13,15 +13,15 @@ var confirmLocation = document.getElementById('confirmButton');
 var uplWindow = document.getElementById('popUpUpload');
 var topInstruction = document.getElementById('uploadHeading');
 
-function runApp() {
-    "use strict";
+/*function runApp() {*/
+//    "use strict";
 
     //run relevant functions when various elements are clicked
     document.getElementById("uploadCancel").onclick = endUpload;
     confirmLocation.onclick = detailsForm;
     document.getElementById("detailsCancel").onclick = unConfirmLocation;
     document.getElementById('doneUpload').onclick = confirmAll;
-}
+/*}*/
 
 
 
@@ -35,11 +35,9 @@ function endUpload() {
 //function to open the map
 /*needs marker, map, markerPos and confirmed*/
 function initMap() {
-    "use strict";
     //set up the map and give it an fallback center position
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -36.8436, lng: 174.7669},
-        zoom: 15,
+        center: {lat: -36.86803405818809, lng: 174.75977897644043},
         //disable default controls and properties of the map
         streetViewControl: false,
         mapTypeControl: false,
@@ -50,7 +48,10 @@ function initMap() {
     //if geolocation is working center the map on the user's position
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
-            var initialLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            var initialLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
             map.setCenter(initialLocation);
         });
     }
