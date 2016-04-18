@@ -142,17 +142,23 @@ h1 {
 /*-----------------------------------------------------------------*/
 .popUpDone {
     background-color: transparent;
-    border: none;           
+/*    border: 1px solid black;           */
+    border: none;
     font-size: 1.5em;
     margin: 0;
     padding: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    background-color: white;
+    background-color: rgba(255, 255, 255, 0.4);
     position: absolute;
 /*
     padding: 2px 6px 3px;
     box-shadow: 0px 0px 10px black;
 */
     bottom: 9px;
-    right: 20px;
+/*    right: 20px;*/
+    right: 12px;
 /*
     adds a border box on the done button:
                 
@@ -163,9 +169,11 @@ h1 {
 */
 }
 
+/*
 #doneEdit {
     display: none;
 }
+*/
 
 
 /*-----------------------------------------------------------------*/
