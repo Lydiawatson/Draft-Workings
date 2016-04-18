@@ -15,10 +15,6 @@ var infoValues;
 var originalPos;
 
 
-var genderPrefs = [];
-var babyPrefs = [];
-var accessPrefs = null;
-
 
 var filtWindow = document.getElementById("popUpFilter");
 
@@ -30,7 +26,7 @@ var editing;
 
 document.getElementById('uploadButton').onclick = uploadPage;
 document.getElementById('creditsButton').onclick = openCredits;
-document.getElementById("filterButton").onclick = getFilters;
+document.getElementById("filterButton").onclick = openFilters;
 
 
 
@@ -74,6 +70,25 @@ function loadData() {
     }
     looArray = [];
     
+    //get the user's preferences saved in the localStorage and store them in variables.
+    var allPrefs = getPrefs();
+    var genderPrefs = allPrefs.genderPrefs;
+    var babyPrefs = allPrefs.babyPrefs;
+    var accessPrefs = allPrefs.accessPrefs;
+    
+    //ticks filter checkboxes if they are in the preferences
+    //see other method of doing this in notes
+    for (var i = 0; i < genderPrefs.length; i++) {
+        document.getElementById(genderPrefs[i]).checked = true;
+    }
+    for (var i = 0; i < babyPrefs.length; i++) {
+        document.getElementById(babyPrefs[i]).checked = true;
+    }
+    if (accessPrefs) {
+        document.getElementById("wheelchair").checked = true;
+    }
+    
+    
     //create a marker for every location in the database within the geoQuery
     geoQuery.on("key_entered", function (key, location, distance) {
         var markerPos = {lat: location[0], lng: location[1]};
@@ -87,21 +102,44 @@ function loadData() {
             marker: marker,
         }
         
-        
         //add the marker and its key to an array
         looArray.push(markerObject);
         
         //run the filterLoo function, to determine whether each marker meets the user's filter preferences, and if so displays that marker
-        filterLoo(key, marker);
+        filterLoo(key, marker, genderPrefs, babyPrefs, accessPrefs);
         
     });
 }
 
+//function which returns saved preferences from the local storage
+function getPrefs() {
+    //set default values of none for all preferences
+    var genderPrefs = [];
+    var babyPrefs = [];
+    var accessPrefs = null;
+    
+    //set the preferences to the values stored in the local storage provided there is data there
+    if(typeof(Storage) !== "undefined" && localStorage.getItem('genderPrefs') != null) {
+        genderPrefs = JSON.parse(localStorage.getItem('genderPrefs'));
+        babyPrefs = JSON.parse(localStorage.getItem('babyPrefs'));
+        accessPrefs = JSON.parse(localStorage.getItem('accessPrefs'));
+    }
+    
+    
+    
+    
+    return {
+        genderPrefs: genderPrefs,
+        babyPrefs: babyPrefs,
+        accessPrefs: accessPrefs
+    };
+    
+}
 
 
 //function to assess whether a loo meets filter preferences
 /*uses firebaseRef, genderPrefs, babyPrefs, accessPrefs*/
-function filterLoo(key, marker) {
+function filterLoo(key, marker, genderPrefs, babyPrefs, accessPrefs) {
     //variables for whether the particular loo being evaluated meets the filters
     var genderHappy = null;
     var babyHappy = null;
@@ -111,7 +149,7 @@ function filterLoo(key, marker) {
     //retrieve the loo's filter information from the database and evaluate it
     filters.on("value", function(snapshot) {
         var values = snapshot.val();
-        
+        console.log("jkjk" + genderPrefs)
         //assess whether it meets the gender preferences
         if (genderPrefs.length != 0) {
             for (var i = 0; i < genderPrefs.length; i++) {
@@ -148,7 +186,7 @@ function filterLoo(key, marker) {
             if (marker.map == null) {
                 marker.setMap(map);
             }
-            //when the marker is clicked, run the getInfo function
+            //when the marker is clicked, run the openInfo function
             marker.addListener("click", function() {
                 //determine the index in the array of the current markerobject
                 var looIndex;
@@ -157,8 +195,10 @@ function filterLoo(key, marker) {
                         looIndex = i;
                     }
                 }
-                //run the getInfo function with the list of values and the item in the looArray
-                getInfo(values, looArray[looIndex]);})
+                //finds the address of the chosen loo
+                getAddress(looArray[looIndex].marker.position);
+                //run the openInfo function with the list of values and the item in the looArray
+                openInfo(values, looArray[looIndex]);})
         } else {
             //remove the loo from the map
             marker.setMap(null);
@@ -170,9 +210,9 @@ function filterLoo(key, marker) {
 
 //runs a loop that executes the filterLoo function for every loo in the looArray
 /*uses looArray*/
-function filterAll() {
+function filterAll(genderPrefs, babyPrefs, accessPrefs) {
     for (var i = 0; i < looArray.length; i++) {
-        filterLoo(looArray[i].key, looArray[i].marker);
+        filterLoo(looArray[i].key, looArray[i].marker, genderPrefs, babyPrefs, accessPrefs);
     }
 }
     
@@ -180,7 +220,7 @@ function filterAll() {
 
 //opens the filter dialog box and stops the moving of the map
 /*uses filtWindow and map*/
-function getFilters() {
+function openFilters() {
     filtWindow.style.display = 'block';
     map.setOptions({draggable: false});
     document.getElementById('filterCancel').onclick = closeFilters;
@@ -189,40 +229,51 @@ function getFilters() {
 //update/set the user's filter preferences and close the filter window
 /*uses map, filtWindow*/
 function closeFilters() {
-    genderPrefs = [];
-    babyPrefs = [];
-    accessPrefs = null;
+    //clear the preferences
+    var genderPrefs = [];
+    var babyPrefs = [];
+    var accessPrefs = null;
 
-    //ids for each checkbox in the html
-    var checkIds = ['maleFilter', 'femaleFilter', 'uniFilter', 'maleBabyFilter', 'femBabyFilter', 'uniBabyFilter'];
-    //corresponding ids of each filter as they are entered into the firebase database
-    var fireIds = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab'];
+    
+    //ids of each checkbox and the ids of the filters in firebase
+    var filterIds = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab'];
     
     //add every gender preference to the genderPrefs array
     for (var i=0; i<3; i++) {
-        if(document.getElementById(checkIds[i]).checked) {
-            genderPrefs.push(fireIds[i]);
+        if(document.getElementById(filterIds[i]).checked) {
+            genderPrefs.push(filterIds[i]);
         }
     }
     //add every baby preference to the babyPrefs array
     for (var i=3; i<6; i++) {
-        if(document.getElementById(checkIds[i]).checked) {
-            babyPrefs.push(fireIds[i]);
+        if(document.getElementById(filterIds[i]).checked) {
+            babyPrefs.push(filterIds[i]);
         }
     }
     
     //determine whether wheelchair access has been requested
-    if (document.getElementById("wheelchairFilter").checked) {
+    if (document.getElementById("wheelchair").checked) {
         accessPrefs = true;
     }
     
     
     //filter the loos according to preferences
-    filterAll();
+    filterAll(genderPrefs, babyPrefs, accessPrefs);
+    
+    //save the preferences in local storage provided the user has access to local storage
+    if(typeof(Storage) !== "undefined") {
+        localStorage.setItem('genderPrefs', JSON.stringify(genderPrefs));
+        localStorage.setItem('babyPrefs', JSON.stringify(babyPrefs));
+        localStorage.setItem('accessPrefs', JSON.stringify(accessPrefs));
+    } else {
+        alert("Unfortunately your preferences are unable to be saved for future use on this phone. You will need to reenter them each time you open the app.");
+    }
     
     //close the filters window
     filtWindow.style.display = 'none';
     map.setOptions({draggable: true});
+    
+    
 }
 
 //opens the upload page
@@ -239,7 +290,7 @@ function openCredits() {
 
 //opens an infoWindow displaying relevant information about the selected loo
 /*uses checkValues, infoValues, map */
-function getInfo(values, looObject){
+function openInfo(values, looObject){
     //saves the marker's initial position in a variable so that it can be used later to determine whether the marker has been moved
     var firstLatLng = looObject.marker.position;
     //sets up variables needed for edit mode
@@ -250,8 +301,7 @@ function getInfo(values, looObject){
     //corresponding values of each filter as they are entered into the firebase database
     infoValues = [values.male, values.fem, values.uni, values.mBab, values.fBab, values.uBab, values.wheelchair];
     
-    //finds the address of the chosen loo
-    getAddress(looObject.marker.position);
+    
 
     //ticks checkboxes depending whether the properties are true or false in the database
     for (var i = 0; i < checkValues.length; i++) {
@@ -292,7 +342,6 @@ function closeInfo(looObject, firstLatLng) {
     //if the user is currently in edit mode, cancel their edit
     if (editing) {
         cancelEdit(looObject, firstLatLng);
-        exitEditMode();
     }
 }
 
@@ -308,7 +357,6 @@ function determineEditFunction(looObject, firstLatLng){
     } else {
         //otherwise set everything back to its initial value and exit edit mode
         cancelEdit(looObject, firstLatLng);
-        exitEditMode();
     }
 };
 
@@ -359,6 +407,8 @@ function cancelEdit(looObject, firstLatLng) {
     if (looObject.marker.position != firstLatLng) {
         looObject.marker.setPosition(firstLatLng);
     }  
+    
+    exitEditMode();
 }
 
 //saves the edited information
@@ -430,8 +480,11 @@ function exitLocEdit(edMarker) {
     edMarker.setDraggable(false);
     map.setOptions({draggable: false});
     
+    //gets the user preferences
+    var allPrefs = getPrefs();
+    
     //displays all bathrooms that meet the user preferences
-    filterAll();
+    filterAll(allPrefs.genderPrefs, allPrefs.babyPrefs, allPrefs.accessPrefs);
     
     //hides and displays the necessary elements
     document.getElementById('popUpInfo').style.display = 'block';
