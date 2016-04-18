@@ -38,6 +38,7 @@ function initMap() {
     //set up the map and give it an fallback center position
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -36.86803405818809, lng: 174.75977897644043},
+        zoom: 15,
         //disable default controls and properties of the map
         streetViewControl: false,
         mapTypeControl: false,
