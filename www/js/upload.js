@@ -1,19 +1,15 @@
-//function to make sure cordova is ready before running the rest of the app
-
-var map;
-var marker;
-
 function checkIfReady() {
+    "use strict";
     document.addEventListener('deviceready', initMap, false);
 }
 
-//function to run the app, sets up map and calls functions when elements are clicked
 function initMap() {
+    "use strict";
     //set up some elements as variables
     var confirmLocButton = document.getElementById('confirmButton');
     
     //set up the map and give it a fallback center
-    map = new google.maps.Map(document.getElementById('map'), {
+    var map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: -36.86803405818809, lng: 174.75977897644043},
         zoom: 15,
         //disable default controls and properties of the map
@@ -24,8 +20,8 @@ function initMap() {
     });
     
     //set up the marker
-    marker = new google.maps.Marker({
-        map: map,
+    var marker = new google.maps.Marker({
+        map: map
     });
     
     //recenter the map on the user's position if possible
@@ -40,7 +36,7 @@ function initMap() {
     }
     
     //allow the marker the be added to the map with any of the four methods of click, drag, search, or use user's location
-    allowMarkerEditing(confirmLocButton);
+    allowMarkerEditing(map, marker, confirmLocButton);
     
     
     //when cancel button is clicked return to home page
@@ -50,12 +46,13 @@ function initMap() {
 
 //function to return the user to the homepage of the app
 function endUpload() {
+    "use strict";
     window.open('index.html', '_self');
 }
-    
-   
+
 //function to allow the editing/addition of the marker to the map
-function allowMarkerEditing(confirmLocButton) {
+function allowMarkerEditing(map, marker, confirmLocButton) {
+    "use strict";
     var input = document.getElementById('searchInput');
     marker.setDraggable(true);
     map.setOptions({draggable: true});
@@ -63,12 +60,11 @@ function allowMarkerEditing(confirmLocButton) {
     //set marker position by click
     map.addListener('click', function (e) {
         marker.setPosition({lat: e.latLng.lat(), lng: e.latLng.lng()});
-        //!currently this is giving me the non-updated position, fix this bug at some point
         markerPositionChanged(marker.position, confirmLocButton);
     });
     
     //set marker position when dragged
-    marker.addListener('dragend', function(event) {
+    marker.addListener('dragend', function (event) {
         //!currently this is giving me the non-updated position, fix this bug at some point
         
         markerPositionChanged(marker.position, confirmLocButton);
@@ -78,7 +74,7 @@ function allowMarkerEditing(confirmLocButton) {
     input.disabled = false;
     input.style.display = 'block';
     var autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.addListener('place_changed', function() {
+    autocomplete.addListener('place_changed', function () {
         var place = autocomplete.getPlace().geometry.location;
         map.setCenter(place);
         marker.setPosition(place);
@@ -89,7 +85,7 @@ function allowMarkerEditing(confirmLocButton) {
     if (navigator.geolocation) {
         var myLocation = document.getElementById('myLoc');
         myLocation.style.display = 'block';
-        myLocation.onclick = function() {
+        myLocation.onclick = function () {
             navigator.geolocation.getCurrentPosition(function (position) {
                 var location = {
                     lat: position.coords.latitude,
@@ -99,15 +95,16 @@ function allowMarkerEditing(confirmLocButton) {
                 map.setCenter(location);
                 markerPositionChanged(marker.position, confirmLocButton);
             });
-        }
-    }  
+        };
+    }
     
     //when the confirm button is clicked, open the details form
-    confirmLocButton.onclick = function() {confirmMarker(input, confirmLocButton)};
+    confirmLocButton.onclick = function () {confirmMarker(map, marker, input, confirmLocButton); };
 }
 
 //function that runs when marker position is changed
 function markerPositionChanged(markerPos, confirmLocButton) {
+    "use strict";
     findAddress(markerPos);
     if (confirmLocButton.style.display != 'block') {
         confirmLocButton.style.display = 'block';
@@ -115,9 +112,9 @@ function markerPositionChanged(markerPos, confirmLocButton) {
     }
 }
 
-
 //function to work out the formatted address of the marker
 function findAddress(markerPos) {
+    "use strict";
 //    var markerPos = {lat: markerPosLat, lng: markerPosLng};
     //find the address using google's Geocoder service
     var geocoder = new google.maps.Geocoder();
@@ -130,9 +127,9 @@ function findAddress(markerPos) {
     });
 }
 
-
 //function to open the pop-up window for finishing the upload and to prevent further editing of the marker
-function confirmMarker(input, confirmLocButton) {
+function confirmMarker(map, marker, input, confirmLocButton) {
+    "use strict";
     //turn off all methods of editing or adding the marker
     marker.setDraggable(false);
     map.setOptions({draggable: false});
@@ -147,24 +144,25 @@ function confirmMarker(input, confirmLocButton) {
     document.getElementById('uploadHeading').innerHTML = "Now enter the details...";
     
     //run functions when elements are clicked
-    document.getElementById('detailsCancel').onclick = function() {unConfirmMarker(confirmLocButton)};
-    document.getElementById('doneUpload').onclick = confirmAll;
+    document.getElementById('detailsCancel').onclick = function () {unConfirmMarker(map, marker, confirmLocButton); };
+    document.getElementById('doneUpload').onclick = function () {confirmAll(marker); };
 }
 
-
 //function to allow the user to unconfirm marker location and change it
-function unConfirmMarker(confirmLocButton) {
+function unConfirmMarker(map, marker, confirmLocButton) {
+    "use strict";
     //close the popUp and show the confirm button
     document.getElementById('popUpUpload').style.display = 'none';
     confirmLocButton.style.display = 'block';
     document.getElementById('uploadHeading').innerHTML = 'Confirm marker position or modify';
     
     //turns all methods of editing the marker back on
-    allowMarkerEditing(confirmLocButton);
+    allowMarkerEditing(map, marker, confirmLocButton);
 }
 
 //function to save all of the information as a new entry in the database
-function confirmAll() {
+function confirmAll(marker) {
+    "use strict";
     // create references to the firebase database and to geofire
     var firebaseRef = new Firebase("https://loocation.firebaseio.com/");
     var geoFireRef = new GeoFire(firebaseRef.child("locations"));
@@ -181,7 +179,7 @@ function confirmAll() {
         looFilters[properties[i]] = values[i].checked
     }
     //upload the filter information to firebase under the filters child using a unique key generated by Firebase, then add the marker location using geoFire with the same key
-    geoFireRef.set(firebaseRef.child("filters").push({looFilters}).key(), [marker.position.lat(), marker.position.lng()]).then(function() {
+    geoFireRef.set(firebaseRef.child("filters").push({looFilters: looFilters}).key(), [marker.position.lat(), marker.position.lng()]).then(function() {
         alert("Your new Loocation has been saved successfully. Thank you for your contribution.");
         endUpload();
     }, function(error) {

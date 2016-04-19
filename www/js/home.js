@@ -17,12 +17,11 @@ var originalPos;
 
 
 var filtWindow = document.getElementById("popUpFilter");
+var doneButton = document.getElementById('doneInfo');
 
 //sets up variables needed for edit mode
 var editButton = document.getElementById('filterEdit');
-var doneButton = document.getElementById('doneEdit');
 var editing;
-
 
 document.getElementById('uploadButton').onclick = uploadPage;
 document.getElementById('creditsButton').onclick = openCredits;
@@ -75,6 +74,13 @@ function loadData() {
     var genderPrefs = allPrefs.genderPrefs;
     var babyPrefs = allPrefs.babyPrefs;
     var accessPrefs = allPrefs.accessPrefs;
+    
+    //set cog icon depending on whether any filters are active
+    if (genderPrefs.length != 0 || babyPrefs.length != 0 || accessPrefs != null) {
+        document.getElementById("cog").src = "img/cogTick.svg";
+    } else {
+        document.getElementById("cog").src = "img/cogInitial.svg";
+    }
     
     //ticks filter checkboxes if they are in the preferences
     //see other method of doing this in notes
@@ -149,7 +155,6 @@ function filterLoo(key, marker, genderPrefs, babyPrefs, accessPrefs) {
     //retrieve the loo's filter information from the database and evaluate it
     filters.on("value", function(snapshot) {
         var values = snapshot.val();
-        console.log("jkjk" + genderPrefs)
         //assess whether it meets the gender preferences
         if (genderPrefs.length != 0) {
             for (var i = 0; i < genderPrefs.length; i++) {
@@ -260,6 +265,13 @@ function closeFilters() {
     //filter the loos according to preferences
     filterAll(genderPrefs, babyPrefs, accessPrefs);
     
+    //set cog icon depending on whether any filters are active
+    if (genderPrefs.length != 0 || babyPrefs.length != 0 || accessPrefs != null) {
+        document.getElementById("cog").src = "img/cogTick.svg";
+    } else {
+        document.getElementById("cog").src = "img/cogInitial.svg";
+    }
+    
     //save the preferences in local storage provided the user has access to local storage
     if(typeof(Storage) !== "undefined") {
         localStorage.setItem('genderPrefs', JSON.stringify(genderPrefs));
@@ -316,22 +328,64 @@ function openInfo(values, looObject){
     //specifies the functions to run when different elements are clicked on, and the variables they will be passed
     document.getElementById('infoCancel').onclick = function() {closeInfo(looObject, firstLatLng)};
     editButton.onclick =  function() {determineEditFunction(looObject, firstLatLng)};
+    doneButton.onclick = function() {giveDirections(looObject)};
 }
 
 
 //changes the heading of the info box to the loo's formatted address
 /*uses nothing */
 function getAddress(markerPos) {
+    //find the address using google's Geocoder service
     var geocoder = new google.maps.Geocoder();
     geocoder.geocode({'location': markerPos}, function (results, status) {
-        
         //gives full address:
         if (status === google.maps.GeocoderStatus.OK) {
+            //changes the pop-up window's content so that it displays the address
             document.getElementById("address").innerHTML = results[0].formatted_address;
         }
     });
 }
 
+//gives directions to the selected loo
+function giveDirections(looObject) {
+    document.getElementById('popUpInfo').style.display = 'none';
+    map.setOptions({draggable: true});
+    document.getElementById("cancLocationEdit").onclick = function() {endDirections(directionsDisplay)};
+    document.getElementById("cancLocationEdit").style.display = 'block';
+    
+    
+    var directsRequest = {
+        origin: {lat: -36.86803405818809, lng: 174.75977897644043},
+        destination: looObject.marker.getPosition(),
+        //waypoints
+//        provideRouteAlternatives: true,
+        travelMode: google.maps.TravelMode.WALKING,
+        avoidHighways: true
+    }
+    
+    //variable that references google's directions services
+    var directionsService = new google.maps.DirectionsService();
+    
+    //variable to keep the renderer of directions in
+    var directionsDisplay = new google.maps.DirectionsRenderer();
+    directionsDisplay.setMap(map);
+    
+    directionsService.route(directsRequest, function(result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directionsDisplay.setDirections(result);
+        }
+    });
+}
+
+function endDirections(directionsDisplay) {
+    document.getElementById('popUpInfo').style.display = 'block';
+    map.setOptions({draggable: false});
+    document.getElementById('cancLocationEdit').style.display = 'none';
+    directionsDisplay.setMap(null);
+    directionsDisplay = null;
+    
+    
+}
 
 //closes the infoWindow
 /*uses map */
@@ -367,7 +421,7 @@ function enterEditMode(looObject, firstLatLng) {
      //if (confirm("Do you want to edit the information?")) {
     editing = true
     
-    doneButton.style.display = "block";
+    doneButton.innerHTML = "Done";
     editButton.src = 'img/cancelEditPencil.svg';
 
     //make checkboxes editable
@@ -383,10 +437,10 @@ function enterEditMode(looObject, firstLatLng) {
 
 //takes the app out of edit mode
 /*uses editing, doneButton, editButton, checkValues*/
-function exitEditMode() {
+function exitEditMode(looObject) {
     editing = false
     
-    doneButton.style.display = "none";
+    doneButton.innerHTML = "Loocate!";
     editButton.src = "img/editPencil.svg";
     
     //disable checkboxes again
@@ -394,6 +448,7 @@ function exitEditMode() {
         document.getElementById(checkValues[i]).disabled = true;
     }
     document.getElementById('address').onclick = null;
+    doneButton.onclick = function() {giveDirections(looObject)};
 }
 
 //cancels the edit and resets all information 
@@ -408,12 +463,13 @@ function cancelEdit(looObject, firstLatLng) {
         looObject.marker.setPosition(firstLatLng);
     }  
     
-    exitEditMode();
+    exitEditMode(looObject);
 }
 
 //saves the edited information
 /*uses firebaseRef, loofilters,*/
 function saveEdit(looObject, firstLatLng) {
+    console.log("wash");
    //asess the filtering information and save them in the looFilters object
     var looFilters = {};
     var properties = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab', 'wheelchair'];
