@@ -129,11 +129,7 @@ function getPrefs() {
         genderPrefs = JSON.parse(localStorage.getItem('genderPrefs'));
         babyPrefs = JSON.parse(localStorage.getItem('babyPrefs'));
         accessPrefs = JSON.parse(localStorage.getItem('accessPrefs'));
-    }
-    
-    
-    
-    
+    }    
     return {
         genderPrefs: genderPrefs,
         babyPrefs: babyPrefs,
@@ -151,7 +147,7 @@ function filterLoo(key, marker, genderPrefs, babyPrefs, accessPrefs) {
     var babyHappy = null;
     var accessHappy = null;
     
-    var filters = firebaseRef.child("filters/" + key + "/looFilters");
+    var filters = firebaseRef.child("filters/" + key);
     //retrieve the loo's filter information from the database and evaluate it
     filters.on("value", function(snapshot) {
         var values = snapshot.val();
@@ -482,7 +478,7 @@ function saveEdit(looObject, firstLatLng) {
    
     //create an object and add the data to be updated, with the paths that the data will be updated to
     var updatedData = {}
-    updatedData["filters/" + looObject.key + "/looFilters"] = looFilters;
+    updatedData["filters/" + looObject.key] = looFilters;
     //only add the marker location information to the updatedData object if the marker has been moved
     if (firstLatLng != looObject.marker.position) {
         updatedData["locations/" + looObject.key + "/l"] = {
