@@ -465,7 +465,6 @@ function cancelEdit(looObject, firstLatLng) {
 //saves the edited information
 /*uses firebaseRef, loofilters,*/
 function saveEdit(looObject, firstLatLng) {
-    console.log("wash");
    //asess the filtering information and save them in the looFilters object
     var looFilters = {};
     var properties = ['male', 'fem', 'uni', 'mBab', 'fBab', 'uBab', 'wheelchair'];

@@ -150,7 +150,7 @@ h1 {
     padding-left: 8px;
     padding-right: 8px;
     background-color: white;
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.8);
     position: absolute;
 /*
     padding: 2px 6px 3px;
@@ -175,6 +175,23 @@ h1 {
 }
 */
 
+
+#searchInput {
+    z-index: 30;
+    position: fixed;
+    top: 11%;
+    right: 1%;
+    width: 200px;
+}
+
+.pac-container {
+    font-family: 'Poppins', sans-serif;
+}
+
+/*pac-item {
+    font-family: 'Poppins', sans-serif;
+    background-color: yellow;
+}*/
 
 /*-----------------------------------------------------------------*/
 /*only for the choose your own filters box*/
@@ -206,7 +223,18 @@ h1 {
 }
 
 
-
+#myLoc {
+    display: none;
+    position: fixed;
+    bottom: 50px;
+    left: 10px;
+/*
+    z-index: 50;
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+*/
+}
 
 
 
