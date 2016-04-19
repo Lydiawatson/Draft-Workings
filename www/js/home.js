@@ -1,8 +1,7 @@
 /**/var map;
 /*used by saveEdit and filterLoo*/var firebaseRef = new Firebase("https://loocation.firebaseio.com/");
 /**/var geoFireRef = new GeoFire(firebaseRef.child("locations"));
-
-
+var meMarker;
 
 /**/var looArray = [];
 var checkValues;
@@ -44,6 +43,18 @@ function initMap() {
         disableDoubleClickZoom: true
     });
     
+    meMarker = new google.maps.Marker ({
+        map: map,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                scale: 6,
+                strokeWeight: 2,
+                strokeColor: 'black',
+                fillOpacity: 1,
+                fillColor: '#00CCCC'
+            }
+    });
+    
     //if geolocation is working center the map on the user's position
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (position) {
@@ -53,10 +64,60 @@ function initMap() {
             };
             map.setCenter(initialLocation);
         });
+        navigator.geolocation.watchPosition(showPosition);
     }
+    
+    function showPosition(position) {
+        var posNow = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        meMarker.setPosition(posNow);
+    }
+    
+    
     
     //retrieves locations from the database with the loadData function
     loadData();
+    
+    document.getElementById('searchButton').onclick = function() {
+        if (document.getElementById('searchButton').className == 'screenIcon') {
+            endSearch();
+        } else {
+            search();
+        }
+    };
+}
+
+ 
+function search() {
+    console.log('yo');
+    var searchIcon = document.getElementById('searchButton');
+    var input = document.getElementById('searchIndex');
+    document.getElementById('searchDiv').style.display = 'inline-block';
+    searchIcon.className = "screenIcon";
+    document.getElementById('filterButton').style.display = 'none';
+    document.getElementById('uploadButton').style.display = 'none';
+    
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    var timer = null;
+    input.onkeydown = function() {
+        clearTimeout(timer);
+        console.log(timer);
+    };
+    
+    autocomplete.addListener('place_changed', function() {
+        var place = autocomplete.getPlace().geometry.location;
+        map.setCenter(place);
+        meMarker.setPosition(place);
+        timer = setTimeout(endSearch, 6000)
+    })
+    
+}
+
+function endSearch() {
+    document.getElementById('searchDiv').style.display = 'none';
+    document.getElementById('filterButton').style.display = 'inline-block';
+    document.getElementById('uploadButton').style.display = 'inline-block';
+    document.getElementById('searchButton').className = "menuButton";
+    
 }
 
 
@@ -187,8 +248,9 @@ function filterLoo(key, marker, genderPrefs, babyPrefs, accessPrefs) {
             if (marker.map == null) {
                 marker.setMap(map);
             }
+            
             //when the marker is clicked, run the openInfo function
-            marker.addListener("click", function() {
+            markerListener = marker.addListener("click", function() {
                 //determine the index in the array of the current markerobject
                 var looIndex;
                 for (var i = 0; i < looArray.length; i++) {
@@ -196,8 +258,8 @@ function filterLoo(key, marker, genderPrefs, babyPrefs, accessPrefs) {
                         looIndex = i;
                     }
                 }
-                //finds the address of the chosen loo
-                getAddress(looArray[looIndex].marker.position);
+//                //finds the address of the chosen loo
+                getAddress(marker.position);
                 //run the openInfo function with the list of values and the item in the looArray
                 openInfo(values, looArray[looIndex]);})
         } else {
@@ -280,9 +342,11 @@ function closeFilters() {
     //close the filters window
     filtWindow.style.display = 'none';
     map.setOptions({draggable: true});
+   
     
     
 }
+
 
 //opens the upload page
 /*uses nothing*/
@@ -324,7 +388,14 @@ function openInfo(values, looObject){
     //specifies the functions to run when different elements are clicked on, and the variables they will be passed
     document.getElementById('infoCancel').onclick = function() {closeInfo(looObject, firstLatLng)};
     editButton.onclick =  function() {determineEditFunction(looObject, firstLatLng)};
-    doneButton.onclick = function() {giveDirections(looObject)};
+//    doneButton.onclick = function() {giveDirections(looObject)};
+    doneButton.onclick = function() {
+        if(meMarker.position == undefined || meMarker.position == null) {
+            alert('Your geolocation is not working and there is no place selected as your starting point. Please use the search function to select your starting position before asking for directions')
+        } else {
+        giveDirections(looObject);
+        }
+    }
 }
 
 
@@ -348,13 +419,13 @@ function giveDirections(looObject) {
     map.setOptions({draggable: true});
     document.getElementById("cancLocationEdit").onclick = function() {endDirections(directionsDisplay)};
     document.getElementById("cancLocationEdit").style.display = 'block';
-    
-    
+    markerListener = null;
+        
     var directsRequest = {
-        origin: {lat: -36.86803405818809, lng: 174.75977897644043},
+        origin: meMarker.position,
         destination: looObject.marker.getPosition(),
         //waypoints
-//        provideRouteAlternatives: true,
+        provideRouteAlternatives: true,
         travelMode: google.maps.TravelMode.WALKING,
         avoidHighways: true
     }
@@ -362,18 +433,35 @@ function giveDirections(looObject) {
     //variable that references google's directions services
     var directionsService = new google.maps.DirectionsService();
     
+    var directionsOptions = {
+        map: map, 
+//        draggable: true,
+        suppressMarkers: true,
+        suppressInfoWindows: true,
+        polylineOptions : {
+            map: map, 
+            strokeColor: "#00CCCC",
+            strokeWeight: 6,
+            strokeOpacity: 0.8
+        }
+    }
+    
     //variable to keep the renderer of directions in
-    var directionsDisplay = new google.maps.DirectionsRenderer();
-    directionsDisplay.setMap(map);
+    var directionsDisplay = new google.maps.DirectionsRenderer(directionsOptions);
+    
+//    directionsDisplay.setMap(map);
     
     directionsService.route(directsRequest, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(result);
+//            googe.maps.Polyline.getPath().push(looObject.marker.getPosition());
+            console.log(result.getPath())
         }
     });
 }
 
 function endDirections(directionsDisplay) {
+    console.log('beep beep');
     document.getElementById('popUpInfo').style.display = 'block';
     map.setOptions({draggable: false});
     document.getElementById('cancLocationEdit').style.display = 'none';
@@ -444,8 +532,15 @@ function exitEditMode(looObject) {
         document.getElementById(checkValues[i]).disabled = true;
     }
     document.getElementById('address').onclick = null;
-    doneButton.onclick = function() {giveDirections(looObject)};
-}
+    doneButton.onclick = function() {
+        if(meMarker.position == undefined || meMarker.position == null) {
+            alert('Your geolocation is not working and there is no place selected for starting point. Please use the search function to select your starting position before asking for directions')
+        } else {
+        giveDirections(looObject);
+        }
+    }
+    }
+
 
 //cancels the edit and resets all information 
 /*uses checkValues, infoValues*/

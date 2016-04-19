@@ -43,7 +43,7 @@
             <div class="screenIcon">
                 <img src="img/addLocation.svg" class="icon">
             </div>
-            <h1 id="uploadHeading">First, enter the location...</h1>
+            <h1 id="uploadHeading">Tap the map or type to add the location</h1>
         </header>
         
         <div class="cancConf">
@@ -54,8 +54,10 @@
 <!--        div containing map-->
         <div id="map"></div> 
         
-        <input id="searchInput" type="text" placeholder="Enter location...">
+        <div class="rHElements">
+        <input id="searchInput" class="search" type="text" placeholder="Enter location...">
         <button id="myLoc" class="buttons">Use My Location</buttonid></button>
+        </div>
         
         
         <dialog class="popUpWindow" id="popUpUpload">

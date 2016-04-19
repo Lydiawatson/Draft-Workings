@@ -36,6 +36,8 @@ h1 {
     background-color: #00CCCC;
     height: 10%;
     color: black;
+    width: 100%;
+/*    display: table;*/
 }
 
 /*for index header buttons*/
@@ -55,7 +57,9 @@ h1 {
 .screenIcon{
     display: inline-block;
     height: 100%;
-    min-width: 50px;
+    min-width: 60px;
+/*    display: table-cell;*/
+/*    width: 8%;*/
 }
 
 /*actual icon images for both*/
@@ -71,8 +75,10 @@ h1 {
 .topBar h1 {
     display: inline;
     position: relative;
-    bottom: 21.5%;
+    bottom: 40%;
+    margin-top: -1.9em;
     font-size: 1.3em;
+    
 /*    font-size: 4vw;*/
 }
 
@@ -176,29 +182,7 @@ h1 {
 */
 
 
-#searchInput {
-    z-index: 30;
-    position: fixed;
-    top: 11%;
-    right: 1%;
-    width: 200px;
-    padding-left: 5px;
-    border-radius: 0;
-    box-shadow: none;
-    border: 1px solid #C7C7CD;
-    -webkit-appearance: none;
-    font-weight: 100;
-    height: 25px;
-}
 
-.pac-container {
-    font-family: 'Poppins', sans-serif;
-}
-
-/*pac-item {
-    font-family: 'Poppins', sans-serif;
-    background-color: yellow;
-}*/
 
 /*-----------------------------------------------------------------*/
 /*only for the choose your own filters box*/
@@ -236,8 +220,8 @@ h1 {
 /*-----------------------------------------------------------------*/
 /*upload controlling stuff*/
  #uploadHeading {
-     /*font-size: 1.5em;*/
-     font-size: 4vw;
+/*     font-size: 1.5em;*/
+     font-size: 3.8vw;
 }
 
 .buttons {
@@ -258,6 +242,7 @@ h1 {
     padding: 4px 11px;
     width: 84px;
     text-align: left;
+    font-size: 1em;
 }
 
 #confirmButton, #confLocationEdit {
@@ -274,11 +259,19 @@ h1 {
     width: 10%
 }
 
+.rHElements {
+    position: fixed;
+    top: 11%;
+    right: 1%;
+    z-index: 1;
+    height: 35px;
+    width: 10%;
+}
+
 #myLoc {
     display: none;
-    position: fixed;
-    bottom: 50px;
-    left: 10px;
+    margin-top: 10%;
+    float: right;
 /*
     z-index: 50;
     position: fixed;
@@ -306,6 +299,62 @@ h1 {
     height: 25px;
     opacity: 0.5;
 } 
+
+/*
+.table {
+    display: table;
+    width: 100%
+}
+*/
+
+
+#searchInput {
+    width: 200px;
+    float: right;
+    padding-left: 5px;
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid #C7C7CD;
+    -webkit-appearance: none;
+    font-weight: 100;
+    font-size: 1em;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.pac-container {
+    font-family: 'Poppins', sans-serif;
+}
+
+#searchIndex {
+/*    display: none;*/
+    margin-top: 0;
+    float: right;
+/*    display: none;*/
+    height: 60%;
+    position: relative;
+    top: 17%;
+    padding-left: 5px;
+    padding-bottom: 0;
+    padding-top: 0;
+    width: 95%;
+/*    left: 10%;*/
+    border-radius: 0;
+    box-shadow: none;
+    border: 1px solid #C7C7CD;
+    -webkit-appearance: none;
+}
+
+#searchDiv {
+    height: 100%;
+/*    width: 90%;*/
+    display: none;
+    width: 80%;
+    
+    
+    
+}
+
 
 /*
 input[type=checkbox] {

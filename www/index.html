@@ -55,8 +55,10 @@
     <body>
         <header class="topBar">
             <div class="menuButton" id="searchButton"><img src="img/search.svg" class="icon"></div><!--
+--><div id="searchDiv"><input id="searchIndex" class="search" type="text" placeholder="Enter location..."></div><!--
             --><div class="menuButton middle" id="filterButton"  ><img  class="icon" id="cog"></div><!--
             --><div class="menuButton" id="uploadButton"><img src="img/addLocation.svg" class="icon"></div>
+            
             
 <!--            <a class="newPageLink" href="upload.html" ><div class="menuButton" id="uploadButton"><img src="img/addLocation.svg" class="icon"></div></a>-->
         </header>
@@ -146,7 +148,7 @@
         </script>
         
         <script type="text/javascript" src="js/home.js"></script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6Fb4j6Q1MnyBJg5XCQasf9ykfPwU8eB4&region=NZ&callback=initMap"
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB6Fb4j6Q1MnyBJg5XCQasf9ykfPwU8eB4&region=NZ&libraries=places&callback=initMap"
             async defer>
         </script>
     </body>
