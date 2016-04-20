@@ -25,7 +25,7 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
         <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=low-dpi" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
         <!--<link rel="stylesheet" type="text/css" href="css/index.css" />-->
         <title>Loocation Home Screen</title>
         <link rel="stylesheet" type="text/css" href="css/normalize.css"/>
@@ -53,14 +53,15 @@
     
     
     <body>
+        <div id="dimmer"></div>
         <header class="topBar">
             <div class="menuButton" id="searchButton"><img src="img/search.svg" class="icon"></div><!--
             --><div class="menuButton middle" id="filterButton"  ><img  class="icon" id="cog"></div><!--
             --><div class="menuButton" id="uploadButton"><img src="img/addLocation.svg" class="icon"></div>
             
-            <div class="screenIcon" id="backArrow"><img src="img/backArrow.svg" class="icon"></div>
+            <div class="screenIcon" id="backArrow"><img src="img/backArrow.svg" class="icon"></div><!--
             
-<!--<div id="searchDiv"><input id="searchIndex" class="search" type="text" placeholder="Enter location..."></div>-->
+--><div id="searchDiv"><input id="searchIndex" class="search" type="text" placeholder="Enter location..."></div>
             
             
 <!--            <a class="newPageLink" href="upload.html" ><div class="menuButton" id="uploadButton"><img src="img/addLocation.svg" class="icon"></div></a>-->
@@ -71,7 +72,9 @@
             <button id="confLocationEdit" class="buttons">Confirm</button>
         </div>
         
+        
         <div id="map"></div> <!--This will eventually contain the map at some point when I can be bothered -->
+        
         
 <!--        !!??? same id as popUpWindow in the upload page is this a problem?-->
         <dialog class="popUpWindow" id="popUpFilter">
@@ -89,7 +92,7 @@
             
     
             
-            <div class="filterCategory"><p class="filterTitle">Parent Facilities:</p></div>
+            <div class="filterCategory"><p class="filterTitle">Parent facilities:</p></div>
             <div class="filterChecks">
                 <label><input type="checkbox" id="mBab"/> In Male</label>
                 <br>
@@ -99,7 +102,7 @@
             </div>
             
             
-            <div class="filterCategory"><p class="filterTitle">Wheelchair Access:</p></div>
+            <div class="filterCategory"><p class="filterTitle">Wheelchair access:</p></div>
             <div class="filterChecks">
                 <label><input type="checkbox" id="wheelchair"/> Yes</label>
             </div>

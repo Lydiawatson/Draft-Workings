@@ -276,8 +276,12 @@ h1 {
 
 #myLoc {
     display: none;
-    margin-top: 10%;
+    /*margin-top: 10%;*/
     float: right;
+    width: 205px;
+    margin-right: 1px;
+    text-align: center;
+    margin-bottom: 10%;
 /*
     z-index: 50;
     position: fixed;
@@ -285,8 +289,18 @@ h1 {
     left: 10px;
 */
 }
+.buttons: active {
+/*    background-color: rgba();*/
+}
 
-
+#dimmer {
+    width: 100%;
+    position: fixed;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1;
+}
 /*
             #uploadCancel:active {
                 color: green;
@@ -315,6 +329,7 @@ h1 {
 
 
 #searchInput {
+    /*margin-top: 10%;*/
     width: 200px;
     float: right;
     padding-left: 5px;
@@ -363,6 +378,7 @@ h1 {
 
 #backArrow {
     display: none;
+    margin-left: 10px;
     
 }
 

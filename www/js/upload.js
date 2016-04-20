@@ -153,6 +153,7 @@ function confirmMarker(map, marker, input, confirmLocButton, geoLocationWorks) {
     
     //open the pop up and hide the confirm button
     document.getElementById('popUpUpload').style.display = 'block';
+    document.getElementById('dimmer').style.display = 'block';
     confirmLocButton.style.display = 'none';
     document.getElementById('uploadHeading').innerHTML = "Now enter the details...";
     
@@ -166,6 +167,7 @@ function unConfirmMarker(map, marker, confirmLocButton, geoLocationWorks) {
     "use strict";
     //close the popUp and show the confirm button
     document.getElementById('popUpUpload').style.display = 'none';
+    document.getElementById('dimmer').style.display = 'none';
     confirmLocButton.style.display = 'block';
     document.getElementById('uploadHeading').innerHTML = 'Confirm marker position or modify';
     

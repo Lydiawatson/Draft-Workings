@@ -89,12 +89,14 @@ function initMap() {
  
 function search() {
     console.log('yo');
-    document.getElementById('searchButton').display = 'none';
+    document.getElementById('searchButton').style.display = 'none';
     var input = document.getElementById('searchIndex');
     document.getElementById('searchDiv').style.display = 'inline-block';
-    searchIcon.className = "screenIcon";
+    document.getElementById('backArrow').style.display = 'inline-block';
     document.getElementById('filterButton').style.display = 'none';
     document.getElementById('uploadButton').style.display = 'none';
+    document.getElementById('backArrow').onclick = endSearch;
+    
     
     var autocomplete = new google.maps.places.Autocomplete(input);
     var timer = null;
@@ -114,9 +116,11 @@ function search() {
 
 function endSearch() {
     document.getElementById('searchDiv').style.display = 'none';
+    document.getElementById('searchButton').style.display = 'inline-block';
+    document.getElementById('backArrow').style.display = 'none';
+    
     document.getElementById('filterButton').style.display = 'inline-block';
     document.getElementById('uploadButton').style.display = 'inline-block';
-    document.getElementById('searchButton').className = "menuButton";
     
 }
 
@@ -284,6 +288,7 @@ function filterAll(genderPrefs, babyPrefs, accessPrefs) {
 //opens the filter dialog box and stops the moving of the map
 /*uses filtWindow and map*/
 function openFilters() {
+    document.getElementById('dimmer').style.display = 'block';
     filtWindow.style.display = 'block';
     map.setOptions({draggable: false});
     document.getElementById('filterCancel').onclick = closeFilters;
@@ -292,6 +297,7 @@ function openFilters() {
 //update/set the user's filter preferences and close the filter window
 /*uses map, filtWindow*/
 function closeFilters() {
+    document.getElementById('dimmer').style.display = 'none';
     //clear the preferences
     var genderPrefs = [];
     var babyPrefs = [];
@@ -383,6 +389,7 @@ function openInfo(values, looObject){
     
     //opens the infoWindow
     document.getElementById('popUpInfo').style.display = 'block';
+    document.getElementById('dimmer').style.display = 'block';
     map.setOptions({draggable: false});
     
     //specifies the functions to run when different elements are clicked on, and the variables they will be passed
@@ -417,6 +424,7 @@ function getAddress(markerPos) {
 //gives directions to the selected loo
 function giveDirections(looObject) {
     document.getElementById('popUpInfo').style.display = 'none';
+    document.getElementById('dimmer').style.display = 'none';
     map.setOptions({draggable: true});
     document.getElementById('cancLocationEdit').innerHTML = 'Finished!';
     document.getElementById("cancLocationEdit").onclick = function() {endDirections(directionsDisplay)};
@@ -466,6 +474,7 @@ function endDirections(directionsDisplay) {
     console.log('beep beep');
     //???open pop up again or nah?
     document.getElementById('popUpInfo').style.display = 'block';
+    document.getElementById('dimmer').style.display = 'block';
     map.setOptions({draggable: false});
     document.getElementById('cancLocationEdit').style.display = 'none';
     directionsDisplay.setMap(null);
@@ -480,6 +489,7 @@ function endDirections(directionsDisplay) {
 function closeInfo(looObject, firstLatLng) {
     document.getElementById('popUpInfo').style.display = 'none';
     map.setOptions({draggable: true});
+    document.getElementById('dimmer').style.display = 'none';
     
     //if the user is currently in edit mode, cancel their edit
     if (editing) {
@@ -622,6 +632,7 @@ function enterLocEdit(looObject) {
     
     //hide and display certain elements
     document.getElementById('popUpInfo').style.display = 'none';
+    document.getElementById('dimmer').style.display = 'none';
     document.getElementById("cancLocationEdit").style.display = 'block';
     document.getElementById("confLocationEdit").style.display = 'block';
     
@@ -647,6 +658,7 @@ function exitLocEdit(edMarker) {
     
     //hides and displays the necessary elements
     document.getElementById('popUpInfo').style.display = 'block';
+    document.getElementById('dimmer').style.display = 'block';
     document.getElementById("cancLocationEdit").style.display = 'none';
     document.getElementById("confLocationEdit").style.display = 'none';
     
