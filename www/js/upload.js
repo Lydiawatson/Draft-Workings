@@ -1,3 +1,5 @@
+
+
 function checkIfReady() {
     "use strict";
     document.addEventListener('deviceready', initMap, false);
