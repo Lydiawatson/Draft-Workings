@@ -358,7 +358,11 @@ h1 {
     display: none;
     width: 80%;
     
-    
+
+}
+
+#backArrow {
+    display: none;
     
 }
 

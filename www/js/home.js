@@ -89,7 +89,7 @@ function initMap() {
  
 function search() {
     console.log('yo');
-    var searchIcon = document.getElementById('searchButton');
+    document.getElementById('searchButton').display = 'none';
     var input = document.getElementById('searchIndex');
     document.getElementById('searchDiv').style.display = 'inline-block';
     searchIcon.className = "screenIcon";
