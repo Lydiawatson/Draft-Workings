@@ -408,6 +408,7 @@ function getAddress(markerPos) {
         //gives full address:
         if (status === google.maps.GeocoderStatus.OK) {
             //changes the pop-up window's content so that it displays the address
+            console.log('hi');
             document.getElementById("address").innerHTML = results[0].formatted_address;
         }
     });
@@ -510,6 +511,8 @@ function enterEditMode(looObject, firstLatLng) {
     
     doneButton.innerHTML = "Done";
     editButton.src = 'img/cancelEditPencil.svg';
+    document.getElementById('address').innerHTML = "Tap here to change marker location"
+    document.getElementById('address').style.color = 'black';
 
     //make checkboxes editable
     for (var i = 0; i<checkValues.length; i++) {
@@ -526,6 +529,7 @@ function enterEditMode(looObject, firstLatLng) {
 /*uses editing, doneButton, editButton, checkValues*/
 function exitEditMode(looObject) {
     editing = false
+    console.log('exiteditmode');
     
     doneButton.innerHTML = "Loocate!";
     editButton.src = "img/editPencil.svg";
@@ -534,6 +538,11 @@ function exitEditMode(looObject) {
     for (var i = 0; i<checkValues.length; i++) {
         document.getElementById(checkValues[i]).disabled = true;
     }
+    
+    getAddress(looObject.marker.position);
+    
+    document.getElementById('address').style.color = 'white';
+    
     document.getElementById('address').onclick = null;
     doneButton.onclick = function() {
         if(meMarker.position == undefined || meMarker.position == null) {
@@ -590,7 +599,7 @@ function saveEdit(looObject, firstLatLng) {
         }
         else {
             alert("This Loocation has been successfully updated. Thank you for helping to maintain the integrity of our data.")
-            exitEditMode();
+            exitEditMode(looObject);
         }
     });
 }
@@ -618,7 +627,8 @@ function enterLocEdit(looObject) {
     
     //specifies the functions to run when different elements are clicked on, and the variables they will be passed
     document.getElementById('cancLocationEdit').onclick = function() {cancelLocationEdit(originalPos, looObject.marker)};
-    document.getElementById('confLocationEdit').onclick = function() {confirmLocationEdit(looObject.marker)};
+    //returns the user to the main editing window, without resetting the marker's position
+    document.getElementById('confLocationEdit').onclick = function() {exitLocEdit(looObject.marker)};
     
    //} 
 }
@@ -646,14 +656,6 @@ function exitLocEdit(edMarker) {
 //returns the user to the main editing window after resetting the marker's position
 function cancelLocationEdit(originalPos, edMarker) {
     edMarker.setPosition(originalPos);
-    exitLocEdit(edMarker);
-}
-
-
-//returns the user to the main editing window, without resetting the marker's position
-function confirmLocationEdit(edMarker) {
-    //???I want these to execute asynchronously/in order: how??
-    getAddress(edMarker.position);
     exitLocEdit(edMarker);
 }
 
