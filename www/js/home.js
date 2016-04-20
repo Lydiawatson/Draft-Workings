@@ -63,7 +63,7 @@ function initMap() {
                 lng: position.coords.longitude
             };
             map.setCenter(initialLocation);
-            meMarker.setPosition(posNow);
+            meMarker.setPosition(initialLocation);
         });
 //        navigator.geolocation.watchPosition(showPosition);
     }
