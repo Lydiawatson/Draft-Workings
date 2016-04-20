@@ -417,6 +417,7 @@ function getAddress(markerPos) {
 function giveDirections(looObject) {
     document.getElementById('popUpInfo').style.display = 'none';
     map.setOptions({draggable: true});
+    document.getElementById('cancLocationEdit').innerHTML = 'Finished!';
     document.getElementById("cancLocationEdit").onclick = function() {endDirections(directionsDisplay)};
     document.getElementById("cancLocationEdit").style.display = 'block';
     markerListener = null;
@@ -462,11 +463,13 @@ function giveDirections(looObject) {
 
 function endDirections(directionsDisplay) {
     console.log('beep beep');
+    //???open pop up again or nah?
     document.getElementById('popUpInfo').style.display = 'block';
     map.setOptions({draggable: false});
     document.getElementById('cancLocationEdit').style.display = 'none';
     directionsDisplay.setMap(null);
     directionsDisplay = null;
+    document.getElementById('cancLocationEdit').innerHTML = 'Cancel';
     
     
 }
