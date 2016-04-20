@@ -96,13 +96,14 @@ h1 {
     border: 0;
     color: white;
     padding-top: 0;
-/*    width: 220px;*/
-    width: 60%;
+    width: 220px;
+/*    width: 60%;*/
     transform: translateX(-50%);
     position: fixed;
     top: 20%;
     left: 50%;
 /*    margin-left: -130px;*/
+    min-height: 330px;
     padding: 10px 20px;
 /*    height: 330px;*/
     height: auto;
